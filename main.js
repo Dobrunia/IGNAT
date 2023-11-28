@@ -1,4 +1,3 @@
-import './style.scss';
 
 window.addEventListener('DOMContentLoaded', () => {
   const wrapper = document.querySelector('.slide');

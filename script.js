@@ -1,3 +1,4 @@
+import './style.scss';
 
 window.addEventListener('DOMContentLoaded', () => {
   const wrapper = document.querySelector('.slide');
@@ -7,32 +8,65 @@ window.addEventListener('DOMContentLoaded', () => {
   wrapper.scrollTop += scrollStep;
 });
 
-document.querySelector('.slide').addEventListener('wheel', function (event) {
+document.querySelector('.slide').addEventListener('wheel', function(event) {
   event.preventDefault();
 
   const wrapper = document.querySelector('.slide');
   const elements = wrapper.querySelectorAll('span');
 
   let scrollTop = wrapper.scrollTop;
-  let scrollStep = 52; // Заданный шаг прокрутки
+  let scrollStep = 52; // Определен шаг прокрутки
+  let desiredScrollTop;
 
   if (event.deltaY > 0) {
     // Прокрутка вниз
-    wrapper.scrollTop += scrollStep;
+    desiredScrollTop = scrollTop + scrollStep;
   } else {
     // Прокрутка вверх
-    wrapper.scrollTop -= scrollStep;
+    desiredScrollTop = scrollTop - scrollStep;
   }
 
-  let activeIndex = Math.floor(wrapper.scrollTop / scrollStep);
+  scrollTo(wrapper, desiredScrollTop, 400) // Продолжительность плавной прокрутки: 400 мс
+    .then(() => {
+      let activeIndex = Math.round(desiredScrollTop / scrollStep);
 
-  elements.forEach((span, index) => {
-    if (index === activeIndex) {
-      span.classList.add('active');
-    } else {
-      span.classList.remove('active');
-    }
-  });
+      elements.forEach((span, index) => {
+        if (index === activeIndex) {
+          span.classList.add('active');
+        } else {
+          span.classList.remove('active');
+        }
+      });
+    });
+
+  function scrollTo(element, to, duration) {
+    const start = element.scrollTop;
+    const change = to - start;
+    const increment = 20;
+    let currentTime = 0;
+
+    const animateScroll = function() {
+      currentTime += increment;
+      const val = Math.easeInOutQuad(currentTime, start, change, duration);
+      element.scrollTop = val;
+      if (currentTime < duration) {
+        setTimeout(animateScroll, increment);
+      }
+    };
+
+    return new Promise((resolve) => {
+      animateScroll();
+      setTimeout(resolve, duration);
+    });
+  }
+
+  // Функция плавности прокрутки
+  Math.easeInOutQuad = function(t, b, c, d) {
+    t /= d / 2;
+    if (t < 1) return c / 2 * t * t + b;
+    t--;
+    return -c / 2 * (t * (t - 2) - 1) + b;
+  };
 });
 
 const slideButtons = document.querySelectorAll(
@@ -79,6 +113,9 @@ nextButton.addEventListener('click', () => {
     scrollContainer.style.transform = `translateX(-${scrollAmount}px)`;
   }
 });
+
+
+
 
 document.getElementById('contact_us').addEventListener('click', () => {
   document.getElementById('send_form').classList.remove('none');

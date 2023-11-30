@@ -68,22 +68,6 @@ document.querySelector('.slide').addEventListener('wheel', function(event) {
   };
 });
 
-const wrapper = document.querySelector('.slide');
-
-wrapper.addEventListener('wheel', function(event) {
-  event.preventDefault();
-
-  const isScrollingDown = event.deltaY > 0;
-  const isAtTop = wrapper.scrollTop === 0;
-  const isAtBottom = wrapper.scrollTop + wrapper.clientHeight === wrapper.scrollHeight;
-
-  if ((isScrollingDown && isAtBottom) || (!isScrollingDown && isAtTop)) {
-    event.stopPropagation();
-    return false;
-  }
-  
-  // Код для прокрутки слайда и обновления активного элемента...
-});
 
 const slideButtons = document.querySelectorAll(
   '.slide_btn_active, .slide_btn_disable',
